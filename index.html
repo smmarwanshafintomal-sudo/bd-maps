@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>BD Maps — Bangladesh Only</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <i class="fa-solid fa-map-location-dot"></i>
+          <span>BD Maps</span>
+        </div>
+        <button id="close-sidebar" class="icon-btn" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" data-tab="explore">Explore</button>
+        <button class="tab" data-tab="directions">Directions</button>
+      </div>
+
+      <!-- EXPLORE TAB -->
+      <div id="tab-explore" class="tab-content">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="search-input" placeholder="Search districts, places, landmarks..." autocomplete="off" />
+          <button id="clear-search" class="icon-btn hidden" aria-label="Clear">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div id="search-results" class="search-results hidden"></div>
+
+        <div class="section">
+          <h3>Divisions</h3>
+          <div id="divisions-list" class="list"></div>
+        </div>
+
+        <div class="section">
+          <h3>Popular Places</h3>
+          <div id="popular-list" class="list"></div>
+        </div>
+      </div>
+
+      <!-- DIRECTIONS TAB -->
+      <div id="tab-directions" class="tab-content hidden">
+        <div class="directions-form">
+          <div class="route-input">
+            <span class="dot start"></span>
+            <input type="text" id="from-input" placeholder="Starting point..." autocomplete="off" />
+            <button id="use-my-location" class="icon-btn" title="Use my location">
+              <i class="fa-solid fa-location-crosshairs"></i>
+            </button>
+          </div>
+          <div id="from-results" class="search-results hidden"></div>
+
+          <div class="route-input">
+            <span class="dot end"></span>
+            <input type="text" id="to-input" placeholder="Destination..." autocomplete="off" />
+          </div>
+          <div id="to-results" class="search-results hidden"></div>
+
+          <div class="profile-row">
+            <label class="profile-option">
+              <input type="radio" name="profile" value="fastest" checked />
+              <i class="fa-solid fa-bolt"></i> Fastest
+            </label>
+            <label class="profile-option">
+              <input type="radio" name="profile" value="driving" />
+              <i class="fa-solid fa-car"></i> Drive
+            </label>
+            <label class="profile-option">
+              <input type="radio" name="profile" value="bus" />
+              <i class="fa-solid fa-bus"></i> Bus
+            </label>
+            <label class="profile-option">
+              <input type="radio" name="profile" value="walking" />
+              <i class="fa-solid fa-person-walking"></i> Walk
+            </label>
+            <label class="profile-option">
+              <input type="radio" name="profile" value="cycling" />
+              <i class="fa-solid fa-bicycle"></i> Cycle
+            </label>
+          </div>
+
+          <button id="route-btn" class="primary-btn">
+            <i class="fa-solid fa-route"></i> Find Fastest Route
+          </button>
+          <button id="clear-route-btn" class="secondary-btn hidden">
+            <i class="fa-solid fa-xmark"></i> Clear Route
+          </button>
+        </div>
+
+        <div id="route-summary" class="route-summary hidden">
+          <div class="summary-row">
+            <div class="summary-item">
+              <i class="fa-solid fa-road"></i>
+              <span id="route-distance">—</span>
+            </div>
+            <div class="summary-item">
+              <i class="fa-solid fa-clock"></i>
+              <span id="route-duration">—</span>
+            </div>
+          </div>
+          <p id="route-from-to" class="route-label"></p>
+        </div>
+
+        <div class="section tip">
+          <p><i class="fa-solid fa-lightbulb"></i> Tip: Type a district or place name, or click on the map to set points.</p>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <p>Routing: OSRM (OpenStreetMap)</p>
+        <p>Tiles © OpenStreetMap contributors</p>
+      </div>
+    </aside>
+
+    <!-- Map -->
+    <main id="map-container">
+      <div id="map"></div>
+
+      <div class="map-controls top-left">
+        <button id="toggle-sidebar" class="control-btn" title="Menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+
+      <div class="map-controls top-right">
+        <button id="locate-btn" class="control-btn" title="My Location">
+          <i class="fa-solid fa-location-crosshairs"></i>
+        </button>
+        <button id="zoom-in" class="control-btn" title="Zoom In">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+        <button id="zoom-out" class="control-btn" title="Zoom Out">
+          <i class="fa-solid fa-minus"></i>
+        </button>
+        <button id="reset-view" class="control-btn" title="Reset View">
+          <i class="fa-solid fa-house"></i>
+        </button>
+      </div>
+
+      <div id="info-panel" class="info-panel hidden">
+        <button id="close-info" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+        <h2 id="info-title"></h2>
+        <p id="info-bn" class="bn-name"></p>
+        <div id="info-details"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
